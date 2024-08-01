@@ -1,0 +1,297 @@
+In this given file every Example question has alternate answer with alternate column name
+
+1) This is to read the csv file and creating dataframe
+-from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("df").getOrCreate() #spark session has created
+
+df = spark.read.csv('PySpark_Usecase_1.csv',header=True)
+
+df.show()
+
++---+--------+-----------+---+
+| Id|    Name|CountryCode|Age|
++---+--------+-----------+---+
+|301|    Mark|        USA| 20|
+|302|   James|        USA| 25|
+|303|   Smith|        USA| 26|
+|304|     Max|        USA| 32|
+|305|    Jhon|         UK| 35|
+|306|   Putin|        RUS| 42|
+|307|   David|        RUS| 48|
+|308|   Henry|        RUS| 28|
+|309|  Mahesh|        IND| 45|
+|310|Srinivas|        IND| 52|
+|311|    Nagu|        USA| 25|
+|312|Ravinder|        USA| 50|
+|313|   chiru|        USA| 58|
+|314|  sachin|         UK| 50|
+|315|   madan|         NZ| 25|
+|316|    Ravi|         NZ| 30|
+|317|   Nayak|        AUS| 22|
+|318|  Kalyan|        AUS| 21|
+|319| Swaroop|        AUS| 44|
+|320| krishna|        AUS| 28|
++---+--------+-----------+---+
+only showing top 20 rows
+
+2) Group by using Age
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+spark=SparkSession.builder.appName("GROUP BY SESSION").getOrCreate()
+df = spark.read.csv('PySpark_Usecase_1.csv' , header=True)
+
+#using group by function to aggregate the data
+#F has been taken as function
+#the groupBy operation is used to group the DataFrame rows based on one or more columns.
+
+grouped_df = df.groupBy("Age").agg( #Group by Age and apply an aggregation function
+    F.count("Id").alias("user_count"), #Perform a count operation
+    F.collect_list("Name").alias("names"),
+    F.collect_list("CountryCode").alias("countrycodes")
+#the collect_list function is used to aggregate values from a column into a list within each group
+)
+#To show the data
+grouped_df.show()
+
++---+----------+--------------------+--------------------+
+|Age|user_count|               names|        countrycodes|
++---+----------+--------------------+--------------------+
+| 42|         1|             [Putin]|               [RUS]|
+| 30|         7|[Ravi, Ramesh, sa...|[NZ, IND, BR, USA...|
+| 34|         7|[Max, Ramesh, Rav...|[USA, IND, SW, UK...|
+| 28|         8|[Henry, krishna, ...|[RUS, AUS, SA, SW...|
+| 22|         9|[Nayak, Biber, Ve...|[AUS, IND, SA, IN...|
+| 35|         1|              [Jhon]|                [UK]|
+| 52|         1|          [Srinivas]|               [IND]|
+| 43|         6|[Nick, Srinivas, ...|[UK, UK, WI, SL, ...|
+| 31|         1|             [madan]|                [SA]|
+| 27|         6|[Frank, Venkat, N...|[UK, USA, SA, IND...|
+| 26|         1|             [Smith]|               [USA]|
+| 23|         7|[surya, Nick, Sri...|[CA, WI, SA, BR, ...|
+| 41|         1|              [Ravi]|                [WI]|
+| 25|        18|[James, Nagu, mad...|[USA, USA, NZ, FN...|
+| 44|         7|[Swaroop, Nagu, N...|[AUS, SW, SW, IND...|
+| 58|        10|[chiru, Michel, F...|[USA, IND, UK, US...|
+| 33|         1|              [Nagu]|                [UK]|
+| 48|         1|             [David]|               [RUS]|
+| 32|         1|               [Max]|               [USA]|
+| 20|         1|              [Mark]|               [USA]|
++---+----------+--------------------+--------------------+
+only showing top 20 rows
+
+2.1) Group By using CountryCode
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+spark=SparkSession.builder.appName("GROUP BY SESSION").getOrCreate()
+df = spark.read.csv('PySpark_Usecase_1.csv' , header=True)
+
+grouped_df = df.groupBy("CountryCode").agg(
+    F.count("Id").alias("user_count"),
+    F.collect_list("Name").alias("names"),
+    F.collect_list("Age").alias("age")
+)
+
+grouped_df.show()
+
++-----------+----------+--------------------+--------------------+
+|CountryCode|user_count|               names|                 age|
++-----------+----------+--------------------+--------------------+
+|         SL|         6|[Clerk, chiru, Bi...|[50, 25, 28, 43, ...|
+|         SW|        12|[Srinivas, Nagu, ...|[21, 44, 44, 28, ...|
+|        AUS|         4|[Nayak, Kalyan, S...|    [22, 21, 44, 28]|
+|         WI|         6|[Nick, Nagu, Kaly...|[23, 25, 43, 41, ...|
+|         SA|        12|[Venkat, Ravinder...|[22, 28, 21, 23, ...|
+|         CA|         1|             [surya]|                [23]|
+|         BR|         6|[Frank, sachin, C...|[25, 30, 23, 25, ...|
+|        USA|        19|[Mark, James, Smi...|[20, 25, 26, 32, ...|
+|         UK|        21|[Jhon, sachin, Fr...|[35, 50, 27, 43, ...|
+|         FN|         1|              [Axel]|                [25]|
+|        RUS|         3|[Putin, David, He...|        [42, 48, 28]|
+|         NZ|         2|       [madan, Ravi]|            [25, 30]|
+|        IND|        27|[Mahesh, Srinivas...|[45, 52, 50, 58, ...|
++-----------+----------+--------------------+--------------------+
+
+
+3) Order By using Age
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+spark =SparkSession.builder.appName("ORDER BY CLAUSE").getOrCreate()
+
+df = spark.read.csv('PySpark_Usecase_1.csv', header=True)
+
+df_ordered = df.orderBy("age") #using order by with dataframe and assigned it into another dataframe
+
+#show's the result
+df_ordered.show()
+
++---+--------+-----------+---+
+| Id|    Name|CountryCode|Age|
++---+--------+-----------+---+
+|301|    Mark|        USA| 20|
+|318|  Kalyan|        AUS| 21|
+|333|Srinivas|         SW| 21|
+|389|Ravinder|        USA| 21|
+|348|    Ravi|         SA| 21|
+|359|  Kalyan|         UK| 21|
+|406|    Nagu|         UK| 21|
+|317|   Nayak|        AUS| 22|
+|328|   Biber|        IND| 22|
+|332|  Venkat|         SA| 22|
+|347|   madan|        IND| 22|
+|358|   Nayak|         UK| 22|
+|388|    Nagu|        IND| 22|
+|405|Srinivas|        USA| 22|
+|416|   Clerk|         WI| 22|
+|420|    Ravi|        IND| 22|
+|321|   surya|         CA| 23|
+|336|    Nick|         WI| 23|
+|351|Srinivas|         SA| 23|
+|362|   Clerk|         BR| 23|
++---+--------+-----------+---+
+only showing top 20 rows
+
+
+3.1) Order By using Name
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+spark =SparkSession.builder.appName("ORDER BY CLAUSE").getOrCreate()
+
+df = spark.read.csv('PySpark_Usecase_1.csv', header=True)
+
+df_ordered = df.orderBy("Name")
+
+df_ordered.show()
+
++---+-----+-----------+---+
+| Id| Name|CountryCode|Age|
++---+-----+-----------+---+
+|322| Axel|         FN| 25|
+|328|Biber|        IND| 22|
+|337|Biber|        IND| 25|
+|361|Biber|         SL| 28|
+|379|Biber|        IND| 50|
+|397|Biber|         SW| 27|
+|415|Biber|         SA| 43|
+|329|Clerk|         SL| 50|
+|338|Clerk|        USA| 50|
+|362|Clerk|         BR| 23|
+|380|Clerk|         SA| 58|
+|398|Clerk|         SW| 43|
+|416|Clerk|         WI| 22|
+|307|David|        RUS| 48|
+|326|Frank|         UK| 27|
+|330|Frank|         BR| 25|
+|339|Frank|         UK| 58|
+|363|Frank|        IND| 25|
+|381|Frank|         SW| 34|
+|399|Frank|         SA| 25|
++---+-----+-----------+---+
+only showing top 20 rows
+
+4) Checking Null Values in the given csv file('THIS IS OPTIONAL')
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+spark = SparkSession.builder.appName("CHECHING NULL VALUES").getOrCreate()
+
+df = spark.read.csv('PySpark_Usecase_1.csv',header=True)
+
+#im checking the null values in the given file before removing all null's
+null_count = df.select([F.count(F.when(F.col(column).isNull(), column)).alias(column+"_null_count") for column in df.columns])
+
+null_count.show()
+
++-------------+---------------+----------------------+--------------+
+|Id_null_count|Name_null_count|CountryCode_null_count|Age_null_count|
++-------------+---------------+----------------------+--------------+
+|            0|              0|                     0|             0|
++-------------+---------------+----------------------+--------------+
+
+4.1) Removing Null values in the given csv file
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("REMOVE NULL VALUES").getOrCreate()
+
+df = spark.read.csv('PySpark_Usecase_1.csv',header=True)
+
+#dropna() will drop rows with null values
+df.dropna().show()
+
++---+--------+-----------+---+
+| Id|    Name|CountryCode|Age|
++---+--------+-----------+---+
+|301|    Mark|        USA| 20|
+|302|   James|        USA| 25|
+|303|   Smith|        USA| 26|
+|304|     Max|        USA| 32|
+|305|    Jhon|         UK| 35|
+|306|   Putin|        RUS| 42|
+|307|   David|        RUS| 48|
+|308|   Henry|        RUS| 28|
+|309|  Mahesh|        IND| 45|
+|310|Srinivas|        IND| 52|
+|311|    Nagu|        USA| 25|
+|312|Ravinder|        USA| 50|
+|313|   chiru|        USA| 58|
+|314|  sachin|         UK| 50|
+|315|   madan|         NZ| 25|
+|316|    Ravi|         NZ| 30|
+|317|   Nayak|        AUS| 22|
+|318|  Kalyan|        AUS| 21|
+|319| Swaroop|        AUS| 44|
+|320| krishna|        AUS| 28|
++---+--------+-----------+---+
+only showing top 20 rows
+---------------------------------------------------------------------------------------------------------------------------
+
+In this bellow it show's how to use both group by and order by
+
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+spark=SparkSession.builder.appName("GROUP BY SESSION").getOrCreate()
+df = spark.read.csv('PySpark_Usecase_1.csv' , header=True)
+
+grouped_df = df.groupBy("CountryCode").agg(
+    F.count("Id").alias("user_count"),
+    F.collect_list("Name").alias("names"),
+    F.collect_list("Age").alias("age")
+)
+df_ordered = grouped_df.orderBy("user_count")
+df_ordered.show()
+
++-----------+----------+--------------------+--------------------+
+|CountryCode|user_count|               names|                 age|
++-----------+----------+--------------------+--------------------+
+|         CA|         1|             [surya]|                [23]|
+|         FN|         1|              [Axel]|                [25]|
+|         NZ|         2|       [madan, Ravi]|            [25, 30]|
+|        RUS|         3|[Putin, David, He...|        [42, 48, 28]|
+|        AUS|         4|[Nayak, Kalyan, S...|    [22, 21, 44, 28]|
+|         SL|         6|[Clerk, chiru, Bi...|[50, 25, 28, 43, ...|
+|         WI|         6|[Nick, Nagu, Kaly...|[23, 25, 43, 41, ...|
+|         BR|         6|[Frank, sachin, C...|[25, 30, 23, 25, ...|
+|         SW|        12|[Srinivas, Nagu, ...|[21, 44, 44, 28, ...|
+|         SA|        12|[Venkat, Ravinder...|[22, 28, 21, 23, ...|
+|        USA|        19|[Mark, James, Smi...|[20, 25, 26, 32, ...|
+|         UK|        21|[Jhon, sachin, Fr...|[35, 50, 27, 43, ...|
+|        IND|        27|[Mahesh, Srinivas...|[45, 52, 50, 58, ...|
++-----------+----------+--------------------+--------------------+
+
+
+'''
+In the above pyspark job i have given id as user_count
+if we give id insted of user_count it give's ERROR
+ERROR :- AnalysisException: [UNRESOLVED_COLUMN.WITH_SUGGESTION] A column or function parameter with name `id` cannot be resolved. Did you mean one of the following? [`age`, `names`, `CountryCode`, `user_count`].;
+'''
