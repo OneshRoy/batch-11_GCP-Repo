@@ -1,0 +1,68 @@
+
+1)Display all the information of the EMP table?
+select * from empy;
+
+2)Display unique Jobs from EMP table?
+SELECT DISTINCT job FROM EMPY;
+
+3)List the emps in the asc order of their Salaries?
+SELECT * FROM EMPY ORDER BY sal ASC;
+
+4)List the details of the emps in asc order of the Dptnos and desc of Jobs?
+SELECT * FROM EMPY ORDER BY deptno ASC, job DESC;
+
+5)Display all the unique job groups in the descending order?
+SELECT DISTINCT job FROM EMPY ORDER BY job DESC;
+
+6)#Display all the details of all ‘Mgrs’
+SELECT * FROM EMPY WHERE job = 'Manager';
+
+7)List the emps who joined before 1981.
+SELECT * FROM EMPY WHERE hiredate < '1981-01-01';
+
+8)List the Empno, Ename, Sal, Daily sal of all emps in the asc order of Annsal.
+SELECT Empno, Ename, Sal, (Sal / 365) AS Daily_Sal, (Sal * 12) AS Annsal
+FROM EMPY ORDER BY Annsal ASC;
+
+9)Display the Empno, Ename, job, Hiredate, Exp of all Mgrs
+SELECT Empno, Ename, job, Hiredate, FLOOR(DATEDIFF(CURDATE(), Hiredate) / 365) AS Exp
+FROM EMPY WHERE job = 'Manager';
+
+10)List the Empno, Ename, Sal, Exp of all emps working for Mgr 7369.
+SELECT Empno, Ename, Sal, FLOOR(DATEDIFF(CURDATE(), Hiredate) / 365) AS Exp
+FROM EMPY WHERE job = 7369;
+
+11)Display all the details of the emps whose Comm. Is more than their Sal.
+SELECT * FROM EMPY WHERE Comm > Sal;
+
+12)List the emps in the asc order of Designations of those joined after the second half of 1981.
+SELECT * FROM EMPY
+WHERE Hiredate > '1981-06-30'ORDER BY job ASC;
+
+13)List the emps along with their Exp and Daily Sal is more than Rs.100.
+SELECT Empno, Ename, Sal, FLOOR(DATEDIFF(CURDATE(), Hiredate) / 365) AS Exp,
+(Sal / 30) AS Daily_Sal FROM EMPY WHERE (Sal / 30) > 100;
+
+14)List the emps who are either ‘CLERK’ or ‘ANALYST’ in the Desc order
+SELECT * FROM EMPY WHERE job IN ('CLERK', 'ANALYST')
+ORDER BY job DESC;
+
+15)List the emps who joined on 1-MAY-81,3-DEC-81,17-DEC-81,19-JAN-80 in asc order of seniority.
+SELECT * FROM EMPY WHERE Hiredate IN ('1981-05-01', '1981-12-03', '1981-12-17', '1980-01-19')
+ORDER BY Hiredate ASC;
+
+16)List the emp who are working for the Deptno 10 or20
+SELECT * FROM EMPY WHERE Deptno IN (10, 20);
+
+17)List the emps who are joined in the year 81.
+SELECT * FROM EMPY WHERE YEAR(Hiredate) = 1981;
+
+18)List the emps who are joined in the month of Aug 1980.
+SELECT * FROM EMPY WHERE YEAR(Hiredate) = 1980 AND MONTH(Hiredate) = 8;
+
+19)List the emps Who Annual sal ranging from 22000 and 45000
+SELECT * FROM EMPY WHERE (Sal * 12) BETWEEN 22000 AND 45000;
+
+20)List the Enames those are having five characters in their Names.
+SELECT Ename FROM EMPY WHERE LENGTH(Ename) = 5;
+
